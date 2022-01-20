@@ -4,8 +4,8 @@
 #include <windows.h>
 #include <time.h>
 
-#define SCREENWIDTH  150
-#define SCREENHEIGHT 50
+#define SCREENWIDTH  200
+#define SCREENHEIGHT 70
 
 int main ()
 {
@@ -17,11 +17,13 @@ int main ()
 
     int white_char_positions[SCREENWIDTH][2];
     int ticks_from_white[SCREENWIDTH][SCREENHEIGHT];
+    int line_heights[SCREENWIDTH];
 
     for (int i = 0; i < SCREENWIDTH; i++)
     {
         white_char_positions[i][0] = i;
         white_char_positions[i][1] = -1;
+        line_heights[i] = rand() % 20 + 5;
     }
 
 
@@ -35,6 +37,7 @@ int main ()
                 if (rand() % 10 == 0)
                 {
                     white_char_positions[i][1] = 0;
+                    line_heights[i] = rand() % 20 + 5;
                 }
             }
             else
@@ -58,7 +61,7 @@ int main ()
                 {
                     screen.SetForegroundAt(i, j, 0, 255, 0);
                 }
-                else if (ticks_from_white[i][j] == 20)
+                else if (ticks_from_white[i][j] >= line_heights[i])
                 {
                     screen.SetForegroundAt(i, j, 0, 0, 0);
                 }
