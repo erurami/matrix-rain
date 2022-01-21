@@ -1,15 +1,65 @@
 
-#include "libs\surface.h"
+#include "libs/surface.h"
 #include <stdlib.h>
+
+#if _WIN32
 #include <windows.h>
+#else
+#include <unistd.h>
+#define Sleep(time) usleep(time * 1000)
+#endif
+
 #include <time.h>
 
-#define SCREENWIDTH  200
-#define SCREENHEIGHT 70
-
-int main ()
+typedef struct _ConsoleSize
 {
+    int width;
+    int height;
+} CONSOLESIZE;
+
+#if _WIN32
+void GetConsoleSize(CONSOLESIZE *pConsize)
+{
+    CONSOLE_SCREEN_BUFFER_INFO csbi;
+
+    GetConsoleScreenBufferInfo(GetStdHandle(STD_OUTPUT_HANDLE), &csbi);
+    pConsize->width  = csbi.srWindow.Right - csbi.srWindow.Left + 1;
+    pConsize->height = csbi.srWindow.Bottom - csbi.srWindow.Top + 1;
+}
+#else
+#include <sys/ioctl.h>
+void GetConsoleSize(CONSOLESIZE *pConsize)
+{
+    struct winsize w;
+    ioctl(0, TIOCGWINSZ, &w);
+
+    pConsize->width  = w.ws_col;
+    pConsize->height = w.ws_row;
+}
+#endif
+
+int main (int argc, char* argv[])
+{
+    CONSOLESIZE consize;
+    GetConsoleSize(&consize);
+
+    int SCREENHEIGHT = consize.height;
+    int SCREENWIDTH  = consize.width;
+
+    if (argc >= 3)
+    {
+        SCREENHEIGHT = atoi(argv[2]);
+    }
+    if (argc >= 2)
+    {
+        SCREENWIDTH = atoi(argv[1]);
+    }
+
+#if _WIN32
     system("cls");
+#else
+    system("clear");
+#endif
 
     srand((unsigned int)time(NULL));
 
